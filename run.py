@@ -6,6 +6,9 @@ import sys
 import os
 import logging
 import configparser
+import RPi.GPIO as GPIO
+from tx_rx.receiver import Receiver
+from tx_rx.sender import Sender
 
 LOG = logging.getLogger('433_jammer')
 parser = argparse.ArgumentParser(description='Waits for a signal with a specific structure and tries to jam that')
@@ -20,7 +23,7 @@ def main(argv):
     logging.getLogger().setLevel(args.verbosity)
     LOG.debug('Verbosity is at level: ' + str(verbosity))
     LOG.debug('Using config file: ' + str(config_file))
-    receiver_gnd, receiver_vcc, receiver_data, sender_gnd, sender_vcc, sender_data, signal_freq, signal_clock, signal_sample = getConfigValues(config_file)
+    receiver_gnd, receiver_vcc, receiver_data, sender_gnd, sender_vcc, sender_data, signal_freq, signal_clock, signal_sample, signal_duty = getConfigValues(config_file)
     LOG.debug('Config - Receiver - GND: ' + str(receiver_gnd))
     LOG.debug('Config - Receiver - VCC: ' + str(receiver_vcc))
     LOG.debug('Config - Receiver - Data: ' + str(receiver_data))
@@ -30,6 +33,11 @@ def main(argv):
     LOG.debug('Config - Signal - Frequency in MHz: ' + str(signal_freq))
     LOG.debug('Config - Signal - Clock in Hz: ' + str(signal_clock))
     LOG.debug('Config - Signal - Sample in MHz: ' + str(signal_sample))
+    LOG.debug('Config - Signal - Duty in %: ' + str(signal_duty*100))
+    GPIO.setmode(GPIO.BCM)
+    receiver = Receiver(receiver_data, receiver_gnd, receiver_vcc)
+    #sender = Sender(sender_data, sender_gnd, sender_vcc)
+    receiver.listen(signal_freq, signal_clock, signal_sample, signal_duty)
 
 def getConfigValues(configFile):
     receiver_gnd = 0
@@ -51,13 +59,14 @@ def getConfigValues(configFile):
     sender_vcc = config.getint('sender', 'vcc')
     sender_data = config.getint('sender', 'data')
     freq_str = config.get('signal', 'freq')
-    signal_freq = freq_str[0:len(freq_str)-3]
+    signal_freq = float(freq_str[0:len(freq_str)-3])
     clock_str = config.get('signal', 'clock')
-    signal_clock = clock_str[0:len(clock_str)-3]
+    signal_clock = float(clock_str[0:len(clock_str)-3])
     sample_str = config.get('signal', 'sample')
-    signal_sample = sample_str[0:len(sample_str)-3]
+    signal_sample = int(sample_str[0:len(sample_str)-3])
+    signal_duty = config.getfloat('signal', 'duty')
 
-    return receiver_gnd, receiver_vcc, receiver_data, sender_gnd, sender_vcc, sender_data, signal_freq, signal_clock, signal_sample
+    return receiver_gnd, receiver_vcc, receiver_data, sender_gnd, sender_vcc, sender_data, signal_freq, signal_clock, signal_sample, signal_duty
 
 if __name__ == '__main__':
     main(sys.argv[1:])

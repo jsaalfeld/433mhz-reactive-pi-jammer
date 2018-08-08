@@ -46,11 +46,12 @@ def main(argv):
             curr_time = receiver.listen()
             # sync signal detected at this point
             # skip to the checksum
-            curr_time = receiver.skip(32)
+##            curr_time = receiver.skip(32)
             # modify the checksum to destroy the data packet
-            sender.send_checksum(curr_time)
+            sender.send_jam(curr_time)
     except KeyboardInterrupt:
         print('\nshutting down')
+    finally:
         GPIO.cleanup()
         sys.exit(0)
 

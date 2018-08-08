@@ -75,6 +75,7 @@ class Receiver(metaclass=Singleton):
                         if (curr_time - self.last_sync) > (4000 / 1000000):
                             # if last possible sync signal is too long ago, it is just random noise
                             self.sync = [0] * self.MAX_SYNC
+                            LOG.debug('reset')
                     
                     self.sync[self.sync_count] = 1
                     self.last_sync = curr_time

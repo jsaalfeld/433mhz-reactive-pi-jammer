@@ -39,9 +39,21 @@ def main(argv):
     LOG.debug('Config - Signal - Duty in %: ' + str(signal_duty*100))
     GPIO.setmode(GPIO.BCM)
     receiver = Receiver(receiver_data, receiver_gnd, receiver_vcc, sync_length, tolerance, max_sync)
-    #sender = Sender(sender_data, sender_gnd, sender_vcc)
+    sender = Sender(sender_data, sender_gnd, sender_vcc)
 ##    receiver.listen(signal_freq, signal_clock, signal_sample, signal_duty)
-    receiver.listen()
+    try:
+        while True:
+            curr_time = receiver.listen()
+            # sync signal detected at this point
+            # skip to the checksum
+            curr_time = receiver.skip(32)
+            # modify the checksum to destroy the data packet
+            sender.send_checksum(curr_time)
+    except KeyboardInterrupt:
+        print('\nshutting down')
+        GPIO.cleanup()
+        sys.exit(0)
+
 
 def getConfigValues(configFile):
     receiver_gnd = 0

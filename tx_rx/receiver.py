@@ -35,8 +35,24 @@ class Receiver(metaclass=Singleton):
         # For receiving, set the data_pin as input
         GPIO.setup(self.data_pin, GPIO.IN)
         LOG.debug('done')
+     
+    def skip(self, quantity):
+        """skips rising edges with a given quantity of edges"""
+        LOG.debug('skipping edges')
         
         
+        while True:
+            curr_time = time()
+            state = GPIO.input(self.data_pin)
+            
+            if state == GPIO.HIGH and self.old_state == GPIO.LOW:
+                quantity -= 1
+            
+            self.old_state = state
+            
+            if quantity <= 0:
+                return curr_time
+            
     def listen(self):
         
         LOG.info('listening for sync signals')
@@ -73,6 +89,7 @@ class Receiver(metaclass=Singleton):
             if check:
                 self.sync = [0] * self.MAX_SYNC
                 LOG.debug("sync detected")
+                return curr_time
 ##                return curr_time
             
 ##    def listen(self, freq, clock, sample, duty):

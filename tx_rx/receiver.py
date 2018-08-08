@@ -50,7 +50,7 @@ class Receiver(metaclass=Singleton):
             
             self.old_state = state
             
-            if quantity <= 0:
+            if quantity < 0:
                 return curr_time
             
     def listen(self):

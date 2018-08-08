@@ -39,7 +39,7 @@ def main(argv):
     LOG.debug('Config - Signal - Duty in %: ' + str(signal_duty*100))
     GPIO.setmode(GPIO.BCM)
     receiver = Receiver(receiver_data, receiver_gnd, receiver_vcc, sync_length, tolerance, max_sync)
-    sender = Sender(sender_data, sender_gnd, sender_vcc)
+    sender = Sender(sender_data, receiver_data, sender_gnd, sender_vcc)
 ##    receiver.listen(signal_freq, signal_clock, signal_sample, signal_duty)
     try:
         while True:

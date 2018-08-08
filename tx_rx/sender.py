@@ -20,47 +20,54 @@ class Sender(metaclass=Singleton):
     global LOG
     LOG = logging.getLogger('433_jammer.Sender')
     
-    def __init__(self, data_pin, gnd_pin, vcc_pin):
+    def __init__(self, data_pin, recv_data_pin, gnd_pin, vcc_pin):
         self.data_pin = data_pin
+        self.recv_data_pin = recv_data_pin
         self.gnd_pin = gnd_pin
         self.vcc_pin = vcc_pin
+        self.last_state = None
         GPIO.setup(self.data_pin, GPIO.OUT)
+        GPIO.setup(27, GPIO.IN)
 
     def send_checksum(self, curr_time):
         """sends a checksum of 0xFF to destroy the data packet"""
-        LOG.debug("sending checksum")
-        cnt = 8
         first = True
-        last_state = GPIO.input(self.data_pin)
+        curr_time = time()
+        LOG.debug("sending checksum")
+        cnt = 6
+        self.last_state = GPIO.LOW
         
    
-        if first:
-            GPIO.output(self.data_pin, GPIO.HIGH)
-            precise_sleep((500 / 1000000), curr_time)
+##        if first:
+##            GPIO.output(self.data_pin, GPIO.HIGH)
+##            precise_sleep((500 / 1000000), curr_time)
+##            first = False
+##        else:
+##            curr_time = time()
+##            GPIO.output(self.data_pin, GPIO.HIGH)
+##            precise_sleep((500 / 1000000), curr_time)
+##            
+##        GPIO.output(self.data_pin, GPIO.LOW)
+##        
+##        cnt -= 1
+        
+        while cnt >= 1:
+            if not first:
+                curr_time = time()
             first = False
-        else:
-            curr_time = time()
-            GPIO.output(self.data_pin, GPIO.HIGH)
-            precise_sleep((500 / 1000000), curr_time)
+                
+            state = GPIO.input(self.recv_data_pin)
+##            LOG.debug(last_state)
+##            LOG.debug(state)
+##            LOG.debug(cnt)
             
-        GPIO.output(self.data_pin, GPIO.LOW)
-        
-        cnt -= 1
-        
-        while cnt >= 0:
-            curr_time = time()
-            
-            state = GPIO.input(self.data_pin)
-            LOG.debug(last_state)
-            LOG.debug(state)
-            
-            if state == GPIO.HIGH and last_state == GPIO.LOW:
+            if state == GPIO.HIGH and self.last_state == GPIO.LOW:
                 LOG.debug('count: ' + str(cnt))
                 cnt -= 1
                 GPIO.output(self.data_pin, GPIO.HIGH)
-                precise_sleep((500 / 1000000), curr_time)
+                precise_sleep((430 / 1000000), curr_time)
                 GPIO.output(self.data_pin, GPIO.LOW) 
             
-            last_state = state
+            self.last_state = state
             
         return True

@@ -56,7 +56,7 @@ class Receiver(metaclass=Singleton):
     def listen(self):
         """identifies sync signals for a given sync pulse length"""
         
-        LOG.info('listening for sync signals')
+        LOG.debug('listening for sync signals')
         
         while True:
             check = False

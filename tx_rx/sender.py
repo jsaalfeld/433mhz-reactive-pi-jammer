@@ -41,13 +41,9 @@ class Sender(metaclass=Singleton):
         LOG.debug('freq: ' + str(freq))
         LOG.debug('duty: ' + str(duty_cycle * 100))
         p = GPIO.PWM(self.data_pin, freq)
-        p.start(duty_cycle * 100)
+        p.start((duty_cycle * 100))
         precise_sleep(sleep_time, curr_time)
         p.stop()
-        
-        def steckdosen_jam(self, curr_time, sleep_time):
-            """jamming-Signal für die Steckdosen"""
-            
-            
+                    
 ##            
         return True

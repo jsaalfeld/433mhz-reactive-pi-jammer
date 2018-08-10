@@ -52,11 +52,11 @@ def main(argv):
             curr_time = receiver.listen()
             # sync signal detected at this point
             # skip to the checksum
-##            curr_time = receiver.skip(32)
+##            curr_time = receiver.skip(2)
             
             
             # modify the checksum to destroy the data packet
-            sender.send_jam(curr_time, wall_socket, signal_duty, signal_clock)
+            sender.send_jam(curr_time, data_packet, signal_duty, signal_clock)
             
     except KeyboardInterrupt:
         print('\nshutting down')

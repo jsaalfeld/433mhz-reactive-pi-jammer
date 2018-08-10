@@ -29,63 +29,25 @@ class Sender(metaclass=Singleton):
         GPIO.setup(self.data_pin, GPIO.OUT)
         GPIO.setup(self.recv_data_pin, GPIO.IN)
 
-    def send_jam(self, curr_time):
-        """sends a jam signal"""
+    def send_jam(self, curr_time, sleep_time, duty_cycle, clock):
+        """jamming-Signal für die Wetterstation"""
         first = True
         curr_time = time()
-        LOG.debug("sending checksum")
+        LOG.debug("sending jam signal")
         cnt = 7
         self.last_state = GPIO.LOW
         
-        
-##        GPIO.output(self.data_pin, GPIO.HIGH)
-##        precise_sleep((509 / 1000), curr_time)
-##        GPIO.output(self.data_pin, GPIO.LOW)
-##        
-        freq = 15000
+        freq = round(clock)
+        LOG.debug('freq: ' + str(freq))
+        LOG.debug('duty: ' + str(duty_cycle * 100))
         p = GPIO.PWM(self.data_pin, freq)
-        p.start(25.0)
-##        precise_sleep((506 / 1000), curr_time)
-        sleep(1)
+        p.start(duty_cycle * 100)
+        precise_sleep(sleep_time, curr_time)
         p.stop()
-   
-##        if first:
-##            GPIO.output(self.data_pin, GPIO.HIGH)
-##            precise_sleep((500 / 1000000), curr_time)
-##            first = False
-##        else:
-##            curr_time = time()
-##            GPIO.output(self.data_pin, GPIO.HIGH)
-##            precise_sleep((500 / 1000000), curr_time)
-##            
-##        GPIO.output(self.data_pin, GPIO.LOW)
-##        
-##        cnt -= 1
         
-##        while cnt >= 1:
-##            state = GPIO.input(self.recv_data_pin)
-##            if not first:
-##                curr_time = time()
-##            first = False
-                
-##            LOG.debug(last_state)
-##            LOG.debug(state)
-##            LOG.debug(cnt)
+        def steckdosen_jam(self, curr_time, sleep_time):
+            """jamming-Signal für die Steckdosen"""
             
-##            if state == GPIO.HIGH and self.last_state == GPIO.LOW:
-##                LOG.debug('count: ' + str(cnt))
-####                if cnt % 2 == 0:
-####                    GPIO.output(self.data_pin, GPIO.HIGH)
-####                    precise_sleep((410 / 1000000), curr_time)
-####                    GPIO.output(self.data_pin, GPIO.LOW) 
-####                else:
-####                    GPIO.output(self.data_pin, GPIO.HIGH)
-####                    precise_sleep((190 / 1000000), curr_time)
-####                    GPIO.output(self.data_pin, GPIO.LOW)
-##                GPIO.output(self.data_pin, GPIO.HIGH)
-##                precise_sleep((425 / 1000000), curr_time)
-##                GPIO.output(self.data_pin, GPIO.LOW)
-##                cnt -= 1
-##            self.last_state = state
+            
 ##            
         return True

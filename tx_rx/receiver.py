@@ -54,6 +54,7 @@ class Receiver(metaclass=Singleton):
                 return curr_time
             
     def listen(self):
+        """identifies sync signals for a given sync pulse length"""
         
         LOG.info('listening for sync signals')
         
@@ -91,7 +92,6 @@ class Receiver(metaclass=Singleton):
                 self.sync = [0] * self.MAX_SYNC
                 LOG.debug("sync detected")
                 return curr_time
-##                return curr_time
             
 ##    def listen(self, freq, clock, sample, duty):
 ##        sample_length = float(1/(sample*1000))
@@ -107,7 +107,7 @@ class Receiver(metaclass=Singleton):
 ##                break
 ##        for entry in test:
 ##            if entry != 0:
-##                print(entry)
+##                print(entry)        
 
     def check_sync(self):
         """checks for sync signal and returns true if sync signal is detected"""

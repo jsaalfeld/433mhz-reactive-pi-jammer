@@ -40,15 +40,24 @@ def main(argv):
     GPIO.setmode(GPIO.BCM)
     receiver = Receiver(receiver_data, receiver_gnd, receiver_vcc, sync_length, tolerance, max_sync)
     sender = Sender(sender_data, receiver_data, sender_gnd, sender_vcc)
-##    receiver.listen(signal_freq, signal_clock, signal_sample, signal_duty)
+    
+    fivebits = (4000 / 1000000)
+    eightbits = (5400 / 1000000)
+    data_packet = (29000 / 1000000)
+    wall_socket = (5000 / 1000000)
+    all = (550 / 1000)
+    
     try:
         while True:
             curr_time = receiver.listen()
             # sync signal detected at this point
             # skip to the checksum
 ##            curr_time = receiver.skip(32)
+            
+            
             # modify the checksum to destroy the data packet
-            sender.send_jam(curr_time)
+            sender.send_jam(curr_time, wall_socket, signal_duty, signal_clock)
+            
     except KeyboardInterrupt:
         print('\nshutting down')
     finally:
